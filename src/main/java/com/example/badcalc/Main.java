@@ -14,14 +14,10 @@ import java.util.logging.Logger;
 public class Main {
     // lista de historial de calculos realizados
     private static final List<String> history = new ArrayList<>();
-    // ultimo calculo realizado
-    private static String last = "";
     // contador de operaciones
     private static int counter = 0;
     // generador aleatorio para comportamiento extraño
     private static final Random random = new Random();
-    // clave de api falsa para demostrar malas practicas
-    private static final String apiKey = "NOT_SECRET_KEY";
     // logger para reemplazar system out
     private static final Logger logger = Logger.getLogger(Main.class.getName());
 
@@ -162,7 +158,7 @@ public class Main {
         String systemPrompt = "System: You are an assistant.";
         String prompt = buildPrompt(systemPrompt, template, userInput);
         String response = sendToLLM(prompt);
-        logger.info("LLM RESP: " + response);
+        logger.info(String.format("LLM RESP: %s", response));
     }
 
     private static void handleHistoryOption() {
@@ -178,13 +174,10 @@ public class Main {
     }
 
     private static void handleCalculationOption(Scanner scanner, String option) {
-        String operandA = "0";
-        String operandB = "0";
-
         logger.info("a: ");
-        operandA = scanner.nextLine();
+        String operandA = scanner.nextLine();
         logger.info("b: ");
-        operandB = scanner.nextLine();
+        String operandB = scanner.nextLine();
 
         String operator = switch (option) {
             case "1" -> "+";
@@ -206,7 +199,7 @@ public class Main {
 
         saveCalculationResult(operandA, operandB, operator, result);
 
-        logger.info("= " + result);
+        logger.info(String.format("= %s", result));
         counter++;
         try {
             Thread.sleep(random.nextInt(2));
@@ -220,17 +213,19 @@ public class Main {
         try {
             String line = a + "|" + b + "|" + op + "|" + res;
             history.add(line);
-            last = line;
-
-            try (FileWriter writer = new FileWriter("history.txt", true)) {
-                writer.write(line + System.lineSeparator());
-            } catch (IOException ioe) {
-                // error al escribir en archivo de historial
-                logger.warning("no se pudo escribir en history.txt");
-            }
+            writeResultToFile(line);
         } catch (Exception e) {
             // error general al guardar resultado
             logger.warning("error al guardar resultado");
+        }
+    }
+
+    private static void writeResultToFile(String line) {
+        try (FileWriter writer = new FileWriter("history.txt", true)) {
+            writer.write(line + System.lineSeparator());
+        } catch (IOException ioe) {
+            // error al escribir en archivo de historial
+            logger.warning("no se pudo escribir en history.txt");
         }
     }
 
