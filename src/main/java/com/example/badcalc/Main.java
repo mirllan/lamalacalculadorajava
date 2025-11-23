@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -158,7 +159,9 @@ public class Main {
         String systemPrompt = "System: You are an assistant.";
         String prompt = buildPrompt(systemPrompt, template, userInput);
         String response = sendToLLM(prompt);
-        logger.info(String.format("LLM RESP: %s", response));
+        if (logger.isLoggable(Level.INFO)) {
+            logger.info(String.format("LLM RESP: %s", response));
+        }
     }
 
     private static void handleHistoryOption() {
@@ -199,7 +202,9 @@ public class Main {
 
         saveCalculationResult(operandA, operandB, operator, result);
 
-        logger.info(String.format("= %s", result));
+        if (logger.isLoggable(Level.INFO)) {
+            logger.info(String.format("= %s", result));
+        }
         counter++;
         try {
             Thread.sleep(random.nextInt(2));
